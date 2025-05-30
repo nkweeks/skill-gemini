@@ -30,6 +30,21 @@ router.get('/me', verifyToken, async (req, res) => {
   }
 });
 
+// GET /api/users/leaderboard - Get top users by points
+router.get('/leaderboard', async (req, res) => { // No verifyToken for public leaderboard
+  try {
+    const topUsers = await User.findAll({
+      attributes: ['user_id', 'username', 'total_points'],
+      order: [['total_points', 'DESC']],
+      limit: 10, // Get top 10 users
+    });
+    res.json(topUsers);
+  } catch (error) {
+    console.error('Error fetching leaderboard:', error);
+    res.status(500).json({ message: 'Server error while fetching leaderboard.' });
+  }
+});
+
 // GET /api/users/me/badges - Get logged-in user's badges (Protected)
 router.get('/me/badges', verifyToken, async (req, res) => {
   try {
